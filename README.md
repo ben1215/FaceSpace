@@ -1,2 +1,2 @@
-# FaceSpace-CS1555-
+# FaceSpace Project
 Final term project for Pitt CS 1555
