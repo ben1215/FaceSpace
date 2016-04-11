@@ -23,33 +23,33 @@ public class Driver {
 	*/
 	public void createUser(String name, String email, String dob) {
 		long userID = -1;
-
+		
 		//get the next userID
 		try {
 			statement = connection.createStatement();
 			String selectQuery = "SELECT MAX(USER_ID) FROM Users";
 
 			resultSet = statement.executeQuery(selectQuery);
-
-			resultSet.next();
+				
+			resultSet.next();			
 			userID = resultSet.getLong(1);
-
+						
 			String[] names = name.split(" ");
-
+			
 			java.text.SimpleDateFormat df = new java.text.SimpleDateFormat("yyyy-MM-dd");
 			java.sql.Date birthday = new java.sql.Date (df.parse(dob).getTime());
-
+		
 			String insertQuery = "INSERT INTO USERS(USER_ID, F_NAME, L_NAME, EMAIL, BIRTH) VALUES(?, ?, ?, ?, ?)";
 			prepStatement = connection.prepareStatement(insertQuery);
-
+			
 			prepStatement.setLong(1, (userID+1));
 			prepStatement.setString(2, names[0]);
 			prepStatement.setString(3, names[1]);
 			prepStatement.setString(4, email);
 			prepStatement.setDate(5, birthday);
-
+			System.out.println(userID);			
 			prepStatement.executeUpdate();
-
+			System.out.println("Successfully created user: "+name);			
 		}
 		catch(SQLException Ex) {
 	    		System.out.println("Error running the sample queries.  Machine Error: " +
@@ -66,7 +66,7 @@ public class Driver {
 				System.out.println("Cannot close Statement. Machine error: "+e.toString());
 			}
 		}
-
+	
 	}
 
 	/**
@@ -75,9 +75,45 @@ public class Driver {
 	* @param userID1 The user sending the friendship request
 	* @param userID2 The user receiving the friendship request
 	*/
-	public void initiateFriendship(int userID1, int userID2) {
+	public void initiateFriendship(long user_ID1, long user_ID2) { 
+		long friendshipID = -1;
 
+		//get next friendshipID
+		try {
+			statement = connection.createStatement();
+			String selectQuery = "SELECT MAX(FRIENDSHIP_ID) FROM FRIENDSHIPS";
+			
+			resultSet = statement.executeQuery(selectQuery);
+			resultSet.next();
+			
+			friendshipID = resultSet.getLong(1);
 
+			String insertQuery = "INSERT INTO FRIENDSHIPS(FRIENDSHIP_ID, USER_ID1, USER_ID2, FRIEND_STATUS) VALUES(?, ?, ?, ?)";
+			prepStatement = connection.prepareStatement(insertQuery);
+
+			prepStatement.setLong(1, (friendshipID+1));
+			prepStatement.setLong(2, user_ID1);
+			prepStatement.setLong(3, user_ID2);
+			prepStatement.setLong(4, 0);
+
+			prepStatement.executeUpdate();
+	
+			System.out.println("Friendship initiated between users: "+user_ID1+ " "+user_ID2);
+
+		}
+		catch(SQLException e) {
+			System.out.println("Error running the sample queries.  Machine Error: " +
+				       e.toString());	
+		}
+		finally {
+			try {
+				if (statement != null) statement.close();
+				if (prepStatement != null) prepStatement.close();
+			}
+			catch (SQLException e) {
+				System.out.println("Cannot close Statement. Machine error: "+e.toString());	
+			}
+		}
 	}
 
 	/**
@@ -99,7 +135,7 @@ public class Driver {
 			//register Oracle Driver
 			System.out.println("Registering DB...");
 			DriverManager.registerDriver(new oracle.jdbc.driver.OracleDriver());
-
+			
 			//set the location of the database
 			String url = "jdbc:oracle:thin:@class3.cs.pitt.edu:1521:dbclass";
 
@@ -112,13 +148,21 @@ public class Driver {
 				+ e.toString());
 		}
 		finally {
-
+			System.out.println("Successfully connected!");			
+			
 			//do driver stuff
 			Driver test = new Driver();
+			
+			System.out.println("Creating users..");
 			test.createUser("Ethan Pavolik", "etp12@pitt.edu", "1996-05-19");
+
+			test.initiateFriendship(22, 44);
+
+			test.establishFriendship(22, 44);
+
 			connection.close();
 		}
-	}
+	}	
 
 
 }
