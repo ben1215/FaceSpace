@@ -47,7 +47,6 @@ public class Driver {
 			prepStatement.setString(3, names[1]);
 			prepStatement.setString(4, email);
 			prepStatement.setDate(5, birthday);
-			System.out.println(userID);			
 			prepStatement.executeUpdate();
 			System.out.println("Successfully created user: "+name);			
 		}
@@ -121,8 +120,36 @@ public class Driver {
 	* @param userID1 The user ID of the first user
 	* @param userID2 The user ID of the second user
 	*/
-	public void establishFriendship(int userID1, int userID2) {
+	public void establishFriendship(long user_ID1, long user_ID2) {
+		long friendshipID = -1;
+		//get the friendshipID of the friendship to establish
 
+		try {
+			statement = connection.createStatement();
+			String selectQuery = "SELECT FRIENDSHIP_ID FROM FRIENDSHIPS WHERE (USER_ID1 = "+user_ID1+" AND USER_ID2 = "+user_ID2+")";
+			resultSet = statement.executeQuery(selectQuery);
+			resultSet.next();
+
+			friendshipID = resultSet.getLong(1);
+
+			String updateQuery = "UPDATE FRIENDSHIPS SET FRIEND_STATUS = 1, DATE_ESTABLISHED = systimestamp WHERE (FRIENDSHIP_ID = "+friendshipID+")";
+			statement.executeUpdate(updateQuery);
+			
+		}
+		catch(SQLException e) {
+			System.out.println("Error running the sample queries.  Machine Error: " +
+				       e.toString());
+		}
+		finally {
+			System.out.println("Friendship established for users: "+user_ID1+" "+user_ID2);
+			try {
+				if(statement != null) statement.close();
+				if(prepStatement != null) prepStatement.close();
+			}
+			catch(SQLException e) {
+				System.out.println("Cannot close Statement. Machine error: "+e.toString());
+			}
+		}
 
 	}
 
@@ -156,10 +183,13 @@ public class Driver {
 			System.out.println("Creating users..");
 			test.createUser("Ethan Pavolik", "etp12@pitt.edu", "1996-05-19");
 
+			System.out.println("Initiating friendships..");
 			test.initiateFriendship(22, 44);
 
+			System.out.println("Establishing friendships..");
 			test.establishFriendship(22, 44);
 
+			System.out.println("Closing the connection");
 			connection.close();
 		}
 	}	
