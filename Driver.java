@@ -7,6 +7,7 @@
 import java.sql.*;
 import java.text.ParseException;
 import oracle.jdbc.*;
+import java.util.Scanner;
 
 public class Driver {
 	private static Connection connection; //connection to the DB
@@ -23,32 +24,33 @@ public class Driver {
 	*/
 	public void createUser(String name, String email, String dob) {
 		long userID = -1;
-		
-		//get the next userID
+
 		try {
+			//get the next userID
 			statement = connection.createStatement();
 			String selectQuery = "SELECT MAX(USER_ID) FROM Users";
 
 			resultSet = statement.executeQuery(selectQuery);
-				
-			resultSet.next();			
+
+			resultSet.next();
 			userID = resultSet.getLong(1);
-						
+
 			String[] names = name.split(" ");
-			
+
 			java.text.SimpleDateFormat df = new java.text.SimpleDateFormat("yyyy-MM-dd");
 			java.sql.Date birthday = new java.sql.Date (df.parse(dob).getTime());
-		
+
+			//execute an insert statement
 			String insertQuery = "INSERT INTO USERS(USER_ID, F_NAME, L_NAME, EMAIL, BIRTH) VALUES(?, ?, ?, ?, ?)";
 			prepStatement = connection.prepareStatement(insertQuery);
-			
+
 			prepStatement.setLong(1, (userID+1));
 			prepStatement.setString(2, names[0]);
 			prepStatement.setString(3, names[1]);
 			prepStatement.setString(4, email);
 			prepStatement.setDate(5, birthday);
 			prepStatement.executeUpdate();
-			System.out.println("Successfully created user: "+name);			
+			System.out.println("Successfully created user with ID: "+(userID+1));
 		}
 		catch(SQLException Ex) {
 	    		System.out.println("Error running the sample queries.  Machine Error: " +
@@ -65,7 +67,7 @@ public class Driver {
 				System.out.println("Cannot close Statement. Machine error: "+e.toString());
 			}
 		}
-	
+
 	}
 
 	/**
@@ -74,35 +76,36 @@ public class Driver {
 	* @param userID1 The user sending the friendship request
 	* @param userID2 The user receiving the friendship request
 	*/
-	public void initiateFriendship(long user_ID1, long user_ID2) { 
+	public void initiateFriendship(long user_ID1, long user_ID2) {
 		long friendshipID = -1;
 
-		//get next friendshipID
 		try {
+			//get the next friendshipID
 			statement = connection.createStatement();
 			String selectQuery = "SELECT MAX(FRIENDSHIP_ID) FROM FRIENDSHIPS";
-			
+
 			resultSet = statement.executeQuery(selectQuery);
 			resultSet.next();
-			
+
 			friendshipID = resultSet.getLong(1);
 
+			//now insert the new friendship
 			String insertQuery = "INSERT INTO FRIENDSHIPS(FRIENDSHIP_ID, USER_ID1, USER_ID2, FRIEND_STATUS) VALUES(?, ?, ?, ?)";
 			prepStatement = connection.prepareStatement(insertQuery);
 
 			prepStatement.setLong(1, (friendshipID+1));
 			prepStatement.setLong(2, user_ID1);
 			prepStatement.setLong(3, user_ID2);
-			prepStatement.setLong(4, 0);
+			prepStatement.setLong(4, 0); //friendship is pending
 
 			prepStatement.executeUpdate();
-	
+
 			System.out.println("Friendship initiated between users: "+user_ID1+ " "+user_ID2);
 
 		}
 		catch(SQLException e) {
 			System.out.println("Error running the sample queries.  Machine Error: " +
-				       e.toString());	
+				       e.toString());
 		}
 		finally {
 			try {
@@ -110,7 +113,7 @@ public class Driver {
 				if (prepStatement != null) prepStatement.close();
 			}
 			catch (SQLException e) {
-				System.out.println("Cannot close Statement. Machine error: "+e.toString());	
+				System.out.println("Cannot close Statement. Machine error: "+e.toString());
 			}
 		}
 	}
@@ -122,9 +125,9 @@ public class Driver {
 	*/
 	public void establishFriendship(long user_ID1, long user_ID2) {
 		long friendshipID = -1;
-		//get the friendshipID of the friendship to establish
 
 		try {
+			//get the friendshipID of the friendship to establish
 			statement = connection.createStatement();
 			String selectQuery = "SELECT FRIENDSHIP_ID FROM FRIENDSHIPS WHERE (USER_ID1 = "+user_ID1+" AND USER_ID2 = "+user_ID2+")";
 			resultSet = statement.executeQuery(selectQuery);
@@ -132,9 +135,10 @@ public class Driver {
 
 			friendshipID = resultSet.getLong(1);
 
+			//since the friendship should already be initiated just update the status and the date
 			String updateQuery = "UPDATE FRIENDSHIPS SET FRIEND_STATUS = 1, DATE_ESTABLISHED = systimestamp WHERE (FRIENDSHIP_ID = "+friendshipID+")";
 			statement.executeUpdate(updateQuery);
-			
+
 		}
 		catch(SQLException e) {
 			System.out.println("Error running the sample queries.  Machine Error: " +
@@ -162,7 +166,7 @@ public class Driver {
 			//register Oracle Driver
 			System.out.println("Registering DB...");
 			DriverManager.registerDriver(new oracle.jdbc.driver.OracleDriver());
-			
+
 			//set the location of the database
 			String url = "jdbc:oracle:thin:@class3.cs.pitt.edu:1521:dbclass";
 
@@ -175,24 +179,61 @@ public class Driver {
 				+ e.toString());
 		}
 		finally {
-			System.out.println("Successfully connected!");			
-			
+			System.out.println("Successfully connected!");
+
 			//do driver stuff
 			Driver test = new Driver();
-			
-			System.out.println("Creating users..");
-			test.createUser("Ethan Pavolik", "etp12@pitt.edu", "1996-05-19");
+			Scanner input = new Scanner(System.in);
+			Scanner str = new Scanner(System.in);
+			Scanner num = new Scanner(System.in);
+			int op;
 
-			System.out.println("Initiating friendships..");
-			test.initiateFriendship(22, 44);
+			while(true) {
+				System.out.println("Select a function to test.");
+				System.out.println("0. Exit");
+				System.out.println("1. createUser()");
+				System.out.println("2. initiateFriendship()");
+				System.out.println("3. establishFriendship()");
+				op = input.nextInt();
 
-			System.out.println("Establishing friendships..");
-			test.establishFriendship(22, 44);
+				switch(op) {
 
-			System.out.println("Closing the connection");
-			connection.close();
+				case 1:
+					System.out.println("Enter a fullname: ");
+					String name = str.nextLine();
+					System.out.println("Enter an email: ");
+					String email = str.nextLine();
+					System.out.println("Enter a date of birth - YYYY-MM-DD");
+					String dob = str.nextLine();
+					test.createUser(name, email, dob);
+					break;
+
+				case 2:
+					System.out.println("Enter the user ID of the user sending the request: ");
+					int u1 = num.nextInt();
+					System.out.println("Enter the user ID of the user receiving the request: ");
+					int u2 = num.nextInt();
+					test.initiateFriendship(u1, u2);
+					break;
+
+				case 3:
+					System.out.println("Enter the first user ID: ");
+					int us1 = num.nextInt();
+					System.out.println("Enter the second user ID: ");
+					int us2 = num.nextInt();
+					test.establishFriendship(us1, us2);
+					break;
+
+				default:
+					System.out.println("Closing the connection...");
+					connection.close();
+					return;
+				}
+
+			}
+
 		}
-	}	
+	}
 
 
 }
