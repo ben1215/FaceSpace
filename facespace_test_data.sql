@@ -99,7 +99,7 @@ insert into USERS (USER_ID, F_NAME, L_NAME, EMAIL, BIRTH, LAST_LOGIN) values (96
 insert into USERS (USER_ID, F_NAME, L_NAME, EMAIL, BIRTH, LAST_LOGIN) values (97, 'Jose', 'Gonzales', 'jgonzales2o@illinois.edu', TO_TIMESTAMP('1991-06-20 04:25:05', 'YYYY-MM-DD HH24:MI:SS'), TO_TIMESTAMP('2015-08-01 10:08:27', 'YYYY-MM-DD HH24:MI:SS'));
 insert into USERS (USER_ID, F_NAME, L_NAME, EMAIL, BIRTH, LAST_LOGIN) values (98, 'Justin', 'Young', 'jyoung2p@cdbaby.com', TO_TIMESTAMP('1994-06-16 05:30:32', 'YYYY-MM-DD HH24:MI:SS'), TO_TIMESTAMP('2015-09-18 11:29:53', 'YYYY-MM-DD HH24:MI:SS'));
 insert into USERS (USER_ID, F_NAME, L_NAME, EMAIL, BIRTH, LAST_LOGIN) values (99, 'Lois', 'Perez', 'lperez2q@globo.com', TO_TIMESTAMP('1991-07-27 22:12:53', 'YYYY-MM-DD HH24:MI:SS'), TO_TIMESTAMP('2015-04-20 10:55:39', 'YYYY-MM-DD HH24:MI:SS'));
-insert into USERS (USER_ID, F_NAME, L_NAME, EMAIL, BIRTH, LAST_LOGIN) values (100, 'Kathryn', 'Little', 'klittle2r@printfriendly.com', TO_TIMESTAMP('1984-08-25 01:26:22', 'YYYY-MM-DD HH24:MI:SS'), TO_TIMESTAMP('2015-05-13 20:28:39', 'YYYY-MM-DD HH24:MI:SS')); 
+insert into USERS (USER_ID, F_NAME, L_NAME, EMAIL, BIRTH, LAST_LOGIN) values (100, 'Kathryn', 'Little', 'klittle2r@printfriendly.com', TO_TIMESTAMP('1984-08-25 01:26:22', 'YYYY-MM-DD HH24:MI:SS'), TO_TIMESTAMP('2015-05-13 20:28:39', 'YYYY-MM-DD HH24:MI:SS'));
 
 -------------------------------------------------------------------------------
 
@@ -317,7 +317,7 @@ INSERT INTO GROUPS (GROUP_ID, NAME, DESCRIPTION, MEMBER_LIMIT) VALUES (8, 'Hawke
 INSERT INTO GROUPS (GROUP_ID, NAME, DESCRIPTION, MEMBER_LIMIT) VALUES (9, 'Spiderman', 'Hangout for Spiderman fans', 657);
 INSERT INTO GROUPS (GROUP_ID, NAME, DESCRIPTION, MEMBER_LIMIT) VALUES (10, 'Aquaman', 'Hangout for Aquaman fans', 100);
 
-INSERT INTO GROUP_MEMBERS (GROUP_NUMBER_ID, USER_ID, GROUP_ID) VALUES (1, 23, 2); 
+INSERT INTO GROUP_MEMBERS (GROUP_NUMBER_ID, USER_ID, GROUP_ID) VALUES (1, 23, 2);
 INSERT INTO GROUP_MEMBERS (GROUP_NUMBER_ID, USER_ID, GROUP_ID) VALUES (2, 2, 3);
 INSERT INTO GROUP_MEMBERS (GROUP_NUMBER_ID, USER_ID, GROUP_ID) VALUES (3, 3, 2);
 INSERT INTO GROUP_MEMBERS (GROUP_NUMBER_ID, USER_ID, GROUP_ID) VALUES (4, 4, 2);
@@ -631,3 +631,4 @@ insert into MESSAGES (MESSAGE_ID, SUBJECT, BODY, SENDER_ID, RECEIVER_ID, DATE_SE
 insert into MESSAGES (MESSAGE_ID, SUBJECT, BODY, SENDER_ID, RECEIVER_ID, DATE_SENT) values (298, 'In hac habitasse platea dictumst.', 'Nunc purus.', 39, 61, TO_TIMESTAMP('2016-01-26 07:09:51', 'YYYY-MM-DD HH24:MI:SS'));
 insert into MESSAGES (MESSAGE_ID, SUBJECT, BODY, SENDER_ID, RECEIVER_ID, DATE_SENT) values (299, 'Phasellus id sapien in sapien iaculis congue.', 'Cras in purus eu magna vulputate luctus. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.', 115, 54, TO_TIMESTAMP('2015-09-20 06:52:17', 'YYYY-MM-DD HH24:MI:SS'));
 insert into MESSAGES (MESSAGE_ID, SUBJECT, BODY, SENDER_ID, RECEIVER_ID, DATE_SENT) values (300, 'Suspendisse potenti.', 'Donec diam neque, vestibulum eget, vulputate ut, ultrices vel, augue. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Donec pharetra, magna vestibulum aliquet ultrices, erat tortor sollicitudin mi, sit amet lobortis sapien sapien non mi.', 43, 36, TO_TIMESTAMP('2016-02-06 19:35:24', 'YYYY-MM-DD HH24:MI:SS'));
+commit;
