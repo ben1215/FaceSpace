@@ -1,4 +1,4 @@
---Ben Kristofic, Luke Zolyak CS 1555 Term Project
+--Ben Kristofic, Ethan Pavolik CS 1555 Term Project
 --FaceSpace
 ------------------------------------------
 DROP TABLE USERS CASCADE CONSTRAINTS;
