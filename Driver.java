@@ -74,12 +74,12 @@ public class Driver {
 		catch(SQLException Ex) {
 			outputMessage = "Error accessing the database. Error code: " + Ex.toString();
 			try{
-				connection.rollback(); //rolls back the sql statements made in the transactions if there was an error. 
+				connection.rollback(); //rolls back the sql statements made in the transactions if there was an error.
 			}
 			catch (SQLException e) {
 				outputMessage = "Error accessing the database. Error code: " + e.toString();
 			}
-		} 
+		}
 		catch (ParseException e) { //error parsing the data, not in the correct format
 			outputMessage = "Error parsing the date. Error code: " + e.toString();
 		}
@@ -88,7 +88,7 @@ public class Driver {
 				connection.setAutoCommit(true); // sets the transactions control back to automatic.
 				if (statement != null) statement.close();
 				if (prepStatement != null) prepStatement.close();
-			} 
+			}
 			catch (SQLException e) {
 				outputMessage = "Error accessing the database. Error code: " + e.toString();
 			}
@@ -108,7 +108,7 @@ public class Driver {
 			connection.setAutoCommit(false); //starts transation
 			statement = connection.createStatement();
 			String fname1 = "", fname2 = "", lname1 = "", lname2 = "";
-			
+
 			if (user_ID1 == user_ID2){
 				outputMessage = "Cannot initiate friendship with yourself. Please enter valid input."; return;
 			}
@@ -119,9 +119,9 @@ public class Driver {
 			if (!resultSet.next()){
 				outputMessage = "The user " + Long.toString(user_ID1) + " does not exist. Please try again."; return;
 			}
-			
+
 			fname1 = resultSet.getString(1);
-			lname1 = resultSet.getString(2);	
+			lname1 = resultSet.getString(2);
 
 			selectQuery = "SELECT F_NAME, L_NAME FROM USERS WHERE USER_ID =  " + Long.toString(user_ID2);
 			resultSet = statement.executeQuery(selectQuery);
@@ -162,7 +162,7 @@ public class Driver {
 		catch(SQLException e) {
 			outputMessage = "Error accessing the database. Error code: " + e.toString();
 			try{
-				connection.rollback(); // rolls back the changes made to the database if there was an error. 
+				connection.rollback(); // rolls back the changes made to the database if there was an error.
 			}
 			catch (SQLException ex) {
 				outputMessage = "Error accessing the database. Error code: " + ex.toString();
@@ -204,7 +204,7 @@ public class Driver {
 				outputMessage = "The user " + Long.toString(user_ID1) + " does not exist. Please try again."; return;
 			}
 			fname1 = resultSet.getString(1);
-			lname1 = resultSet.getString(2);	
+			lname1 = resultSet.getString(2);
 
 			selectQuery = "SELECT F_NAME, L_NAME FROM USERS WHERE USER_ID =  " + Long.toString(user_ID2);
 			resultSet = statement.executeQuery(selectQuery);
@@ -296,7 +296,8 @@ public class Driver {
 					System.out.println("3. establishFriendship()");
 					System.out.println();
 					op = input.nextInt();
-
+					input.nextLine();
+					
 					switch(op) {
 
 					case 1:
