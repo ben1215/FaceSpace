@@ -60,6 +60,7 @@ public static void main(String args[]) throws SQLException {
 					System.out.println("5. createGroup()");
 					System.out.println("6. addToGroup()");
 					System.out.println("7. sendMessageToUser()");
+					System.out.println("8. displayMessages()");
 					System.out.println();
 					op = input.nextInt();
 					input.nextLine();
@@ -137,6 +138,13 @@ public static void main(String args[]) throws SQLException {
 						int receiver = input.nextInt();
 						System.out.println();
 						backend.sendMessageToUser(sender, receiver, subject, body);
+						break;
+
+					case 8:
+						System.out.println("What user? (User ID)");
+						user = input.nextInt();
+						System.out.println();
+						backend.displayMessages(user);
 						break;
 
 					default:

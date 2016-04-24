@@ -538,6 +538,61 @@ public class FaceSpaceBackend {
 		
 	}
 
+	public void displayMessages (long receiverID){
+		try {
+			connection.setAutoCommit(false); //starts transation
+			statement = connection.createStatement();
+			outputMessage = "";
+		
+			String selectQuery = "SELECT F_NAME, L_NAME FROM USERS WHERE USER_ID = " + Long.toString(receiverID);
+			resultSet = statement.executeQuery(selectQuery);
+			if (!resultSet.next()){
+				outputMessage = "The user " + Long.toString(receiverID) + " does not exist. Please try again."; return;
+			}
+
+			selectQuery = "SELECT F_NAME, L_NAME, SUBJECT, BODY, DATE_SENT FROM MESSAGES INNER JOIN USERS ON MESSAGES.SENDER_ID = USERS.USER_ID WHERE RECEIVER_ID = " + Long.toString(receiverID);
+			resultSet = statement.executeQuery(selectQuery);
+			if (!resultSet.next()){
+				outputMessage = "The user " + Long.toString(receiverID) + " has no messages. Sorry!"; return;
+			}
+			else
+			{
+				outputMessage = outputMessage.concat("\n\nTheir inbox:\n\n");
+
+				while (resultSet.next()){
+					String fname = resultSet.getString(1);
+					String lname = resultSet.getString(2);
+					String subject = resultSet.getString(3);
+					String body = resultSet.getString(4);
+					Timestamp timeS = resultSet.getTimestamp(5);
+					String time = new java.text.SimpleDateFormat("MM/dd/yyyy HH:mm:ss").format(timeS);
+					outputMessage = outputMessage.concat("From: " + fname + " " + lname + "\nReceived: " + time + "\nSubject: " + subject + "\nMessage: " + body + "\n\n");
+				}
+			}
+			connection.commit(); //finishes transaction
+			updateLoginTime(receiverID);
+		}
+		catch(SQLException e) {
+			outputMessage = "Error accessing the database. Error code: " + e.toString();
+			try{
+				connection.rollback(); // rolls back the changes made to the database if there was an error.
+			}
+			catch (SQLException ex) {
+				outputMessage = "Error accessing the database. Error code: " + ex.toString();
+			}
+		}
+		finally {
+			try {
+				connection.setAutoCommit(true); // sets the transactions control back to automatic.
+				if (statement != null) statement.close();
+				if (prepStatement != null) prepStatement.close();
+			}
+			catch (SQLException e) {
+				outputMessage = "Error accessing the database. Error code: " + e.toString();
+			}
+		}
+	}
+
 	private void updateLoginTime(long user_ID){
 		try{
 			statement = connection.createStatement();
