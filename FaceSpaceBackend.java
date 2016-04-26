@@ -593,6 +593,90 @@ public class FaceSpaceBackend {
 		}
 	}
 
+	public void threeDegrees (long a, long b){
+		try {
+			connection.setAutoCommit(false); // starts a mannual transaction
+			statement = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+			Statement usersStatement = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+			Statement statement2 = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+
+			String selectQuery = "SELECT F_NAME, L_NAME FROM USERS WHERE USER_ID = " + Long.toString(a);
+			resultSet = statement.executeQuery(selectQuery);
+			if (!resultSet.next()){
+				outputMessage = "The user " + Long.toString(a) + " does not exist. Please try again."; return;
+			}
+
+			selectQuery = "SELECT F_NAME, L_NAME FROM USERS WHERE USER_ID = " + Long.toString(b);
+			resultSet = statement.executeQuery(selectQuery);
+			if (!resultSet.next()){
+				outputMessage = "The user " + Long.toString(b) + " does not exist. Please try again."; return;
+			}
+			
+			outputMessage = "";
+			String nameA = "", nameB = "", nameC = "", nameD = "";
+			long bFriend = 0;
+			if (areFriends(a,b)){
+				nameA = getName(a, usersStatement);
+				nameB = getName(b, usersStatement);
+				outputMessage = outputMessage.concat(nameA + " and " + nameB + " are friends.\n");
+				return;
+			}
+
+			ResultSet userBFriends = getFriends(b, statement);
+			while (userBFriends.next()){
+				bFriend = userBFriends.getLong(1);
+				if (areFriends(a, bFriend)){
+					nameA = getName(a, usersStatement);
+					nameB = getName(b, usersStatement);
+					nameC = getName(bFriend, usersStatement);
+					outputMessage = outputMessage.concat(nameA + " and " + nameB + " are friends, who is friends with " + nameC + "\n");		
+					return;
+				}
+			}
+
+			userBFriends.beforeFirst();
+			
+			while (userBFriends.next()){
+					long user1 = userBFriends.getLong(1);
+					ResultSet userBFriends_Friends = getFriends(user1, statement2);
+					while (userBFriends_Friends.next()){
+						long user2 = userBFriends_Friends.getLong(1);
+						if (areFriends(user1, user2)){
+							nameA = getName(a, usersStatement);
+							nameB = getName(b, usersStatement);
+							nameC = getName(bFriend, usersStatement);
+							nameD = getName(user2, usersStatement);
+							outputMessage = outputMessage.concat(nameA + " and " + nameD + " are friends, who is friends with " + nameC + ", who is friends with " + nameB + "\n");		
+							return;
+						}
+					}
+			}
+
+			outputMessage = "Alas, there is no connection of friends between these two.";
+			connection.commit(); //closes transaction
+			return;
+		}
+		catch(SQLException e) {
+			outputMessage = "Error accessing the database. Error code: " + e.toString();
+			try{
+				connection.rollback();
+			}
+			catch (SQLException ex) {
+				outputMessage = "Error accessing the database. Error code: " + ex.toString();
+			}
+		}
+		finally {
+			try {
+				connection.setAutoCommit(true); // sets the transactions control back to automatic.
+				if(statement != null) statement.close();
+				if(prepStatement != null) prepStatement.close();
+			}
+			catch(SQLException e) {
+				outputMessage = "Error accessing the database. Error code: "+ e.toString();
+			}
+		}
+	}
+
 	private void updateLoginTime(long user_ID){
 		try{
 			statement = connection.createStatement();
@@ -602,5 +686,51 @@ public class FaceSpaceBackend {
 		catch(SQLException e) {
 			outputMessage = "Error accessing the database. Error code: " + e.toString();
 		}
+	}
+
+	private boolean areFriends (long a, long b){
+		try{
+			statement = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+			String selectQuery = "SELECT COUNT(*) FROM FRIENDSHIPS WHERE (FRIEND_STATUS = 1) AND (((USER_ID1 = " + Long.toString(a) + ") AND (USER_ID2 = " + Long.toString(b) + ")) OR ((USER_ID1 = " + Long.toString(b) + ") AND (USER_ID2 = " + Long.toString(a) + ")))";
+			resultSet = statement.executeQuery(selectQuery);
+			resultSet.next();
+			int result = resultSet.getInt(1);
+			
+			if (result > 0)
+				return true;
+			else
+				return false;
+		}
+		catch(SQLException e) {
+			outputMessage = "Error accessing the database. Error code: " + e.toString();
+			return false;
+		}
+	}
+
+	private ResultSet getFriends (long user, Statement s){
+		try{
+			//s = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+			String selectQuery = "SELECT USER_ID1 FROM FRIENDSHIPS WHERE (USER_ID2 = " + Long.toString(user) + ") AND (FRIEND_STATUS = 1) UNION SELECT USER_ID2 FROM FRIENDSHIPS WHERE (USER_ID1 = " + Long.toString(user) + ") AND (FRIEND_STATUS = 1)";
+			resultSet = s.executeQuery(selectQuery);
+			return resultSet;
+		}
+		catch(SQLException e) {
+			outputMessage = "Error accessing the database. Error code: " + e.toString();
+			return null;
+		}
+	}
+
+	private String getName (long userID, Statement s){
+		try {
+		String selectQuery = "SELECT F_NAME, L_NAME FROM USERS WHERE USER_ID = " + Long.toString(userID);
+		ResultSet usersResultSet = s.executeQuery(selectQuery);
+		usersResultSet.next();
+		String fullName = usersResultSet.getString(1) + " " + usersResultSet.getString(2);
+		return fullName;
+		}
+		catch(SQLException e) {
+			outputMessage = "Error accessing the database. Error code: " + e.toString();
+			return null;
+		}	
 	}
 }

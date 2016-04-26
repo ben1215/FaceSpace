@@ -61,6 +61,7 @@ public static void main(String args[]) throws SQLException {
 					System.out.println("6. addToGroup()");
 					System.out.println("7. sendMessageToUser()");
 					System.out.println("8. displayMessages()");
+					System.out.println("10. threeDegrees()");
 					System.out.println();
 					op = input.nextInt();
 					input.nextLine();
@@ -145,6 +146,15 @@ public static void main(String args[]) throws SQLException {
 						user = input.nextInt();
 						System.out.println();
 						backend.displayMessages(user);
+						break;
+
+					case 10:
+						System.out.println("Enter user ID 1:");
+						int a = input.nextInt();
+						System.out.println("Enter user ID 2:");
+						int b = input.nextInt();
+						System.out.println();
+						backend.threeDegrees(a,b);
 						break;
 
 					default:
