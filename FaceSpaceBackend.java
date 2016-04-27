@@ -8,6 +8,9 @@ import java.sql.*;
 import java.text.ParseException;
 import oracle.jdbc.*;
 import java.util.Scanner;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Date;
 
 public class FaceSpaceBackend {
 	private static Connection connection; //connection to the DB
@@ -26,7 +29,7 @@ public class FaceSpaceBackend {
 	* @param email The email address for the user
 	* @param dob The date of birth for the user
 	*/
-	public void createUser(String name, String email, String dob) {
+	public long createUser(String name, String email, String dob) {
 		long userID = -1;
 
 		try {
@@ -71,7 +74,7 @@ public class FaceSpaceBackend {
 				System.out.println("Cannot close Statement. Machine error: "+e.toString());
 			}
 		}
-
+		return userID+1;
 	}
 
 	/**
@@ -155,6 +158,152 @@ public class FaceSpaceBackend {
 				if(prepStatement != null) prepStatement.close();
 			}
 			catch(SQLException e) {
+				System.out.println("Cannot close Statement. Machine error: "+e.toString());
+			}
+		}
+	}
+
+	/**
+	* This method is used search for users based off a search query.
+	* @param query The search query
+	*/
+	public void searchForUser(String query) {
+		String[] queries = query.split("\\s+");
+		ArrayList<String> result = new ArrayList<String>();
+		String selectQuery;
+
+		if(queries.length <= 0) {
+			System.out.println("Error reading query!");
+			return;
+		}
+
+		try {
+			for(int i = 0; i < queries.length; i++) {
+				statement = connection.createStatement();
+				selectQuery = "SELECT F_NAME, L_NAME FROM USERS WHERE (F_NAME = '"+queries[i]+"' OR L_NAME = '"+queries[i]+"')";
+				resultSet = statement.executeQuery(selectQuery);
+				while (resultSet.next()) {
+					result.add(resultSet.getString("F_NAME")+" "+resultSet.getString("L_NAME"));
+				}
+			}
+
+			Iterator<String> itr = result.iterator();
+			long count = 1;
+
+			if(!itr.hasNext()) {
+				System.out.println("No results found!");
+			}
+			else {
+				System.out.println("Users matching query: "+query);
+				while (itr.hasNext()) {
+					System.out.println(count+". "+itr.next());
+					count++;
+				}
+			}
+		}
+		catch(SQLException e) {
+			System.out.println("Error running the sample queries.  Machine Error: " +
+							 e.toString());
+		}
+		finally {
+			try {
+				if (statement != null) statement.close();
+			}
+			catch (SQLException e) {
+				System.out.println("Cannot close Statement. Machine error: "+e.toString());
+			}
+		}
+	}
+
+	/**
+	* This method is used to find the most active messagers for a certain time period.
+	* @param numUsers The number of users to return
+	* @param userID2 The number of months to look back at
+	*/
+	public void topMessagers(long numUsers, long numMonths) {
+		ArrayList<String> result = new ArrayList<String>();
+		String selectQuery;
+		long millisecondsPerMonth = 2629746000L;
+		Date date = new Date();
+		date.setTime(date.getTime() - (millisecondsPerMonth*numMonths)); //one month in milliseconds
+		Timestamp months = new Timestamp(date.getTime());
+
+		if(numUsers <= 0) {
+			System.out.println("Please enter a valid number of users.");
+			return;
+		}
+
+		if(numMonths <= 0) {
+			System.out.println("Please enter a valid number of months.");
+			return;
+		}
+
+		try {
+			statement = connection.createStatement();
+			selectQuery = "select users.user_id, count(*) AS numMsgs from (users inner join messages on" +
+	    " users.user_id = messages.sender_id OR"+
+			" users.user_id = messages.receiver_id)"+
+			" where messages.date_sent >= to_timestamp('"+ months.toString() + "', 'yyyy-MM-dd hh24:mi:ss.ff')" +
+			" group by users.user_id"+
+			" order by numMsgs DESC";
+
+			resultSet = statement.executeQuery(selectQuery);
+			while (resultSet.next()) {
+				result.add("User ID: "+resultSet.getLong("USER_ID")+"\t Number of messages: "+resultSet.getLong("NUMMSGS"));
+			}
+
+			Iterator<String> itr = result.iterator();
+			long count = 1;
+
+			if(!itr.hasNext()) {
+				System.out.println("No results found!");
+			}
+			else {
+				while (numUsers > 0 && itr.hasNext()) {
+					System.out.println(count+".\t"+itr.next());
+					numUsers--;
+					count++;
+				}
+			}
+		}
+		catch(SQLException e) {
+			System.out.println("Error running the sample queries.  Machine Error: " +
+							 e.toString());
+		}
+		finally {
+			try {
+				if (statement != null) statement.close();
+			}
+			catch (SQLException e) {
+				System.out.println("Cannot close Statement. Machine error: "+e.toString());
+			}
+		}
+	}
+
+	/**
+	* This method is used to remove a user and their info from the system
+	* @param userID The userID of the user to delete
+	*/
+	public void dropUser(long userID) {
+		String selectQuery;
+		try {
+			statement = connection.createStatement();
+			selectQuery = "DELETE FROM Friendships WHERE user_ID1 = "+userID+" OR user_ID2 = "+userID;
+			statement.executeQuery(selectQuery);
+
+			statement = connection.createStatement();
+			selectQuery = "DELETE FROM Users WHERE user_ID = "+userID;
+			statement.executeQuery(selectQuery);
+		}
+		catch(SQLException e) {
+			System.out.println("Error running the sample queries.  Machine Error: " +
+							 e.toString());
+		}
+		finally {
+			try {
+				if (statement != null) statement.close();
+			}
+			catch (SQLException e) {
 				System.out.println("Cannot close Statement. Machine error: "+e.toString());
 			}
 		}

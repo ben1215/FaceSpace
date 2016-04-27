@@ -16,6 +16,7 @@ public class FaceSpaceDriver {
 	private ResultSet resultSet; //result of query
 	private String query;
 	private FaceSpaceBackend backend;
+	private FaceSpaceDemo demo;
 
 	public static void main(String args[]) throws SQLException {
 		String username, password;
@@ -42,6 +43,8 @@ public class FaceSpaceDriver {
 			System.out.println("Successfully connected!");
 
 			FaceSpaceBackend backend = new FaceSpaceBackend(connection);
+			FaceSpaceDemo demo = new FaceSpaceDemo(backend);
+
 			//do driver stuff
 			Scanner input = new Scanner(System.in);
 			Scanner str = new Scanner(System.in);
@@ -54,6 +57,16 @@ public class FaceSpaceDriver {
 				System.out.println("1. createUser()");
 				System.out.println("2. initiateFriendship()");
 				System.out.println("3. establishFriendship()");
+				System.out.println("4. displayFriends()");
+				System.out.println("5. createGroup()");
+				System.out.println("6. addToGroup()");
+				System.out.println("7. sendMessageToUser()");
+				System.out.println("8. displayMessages()");
+				System.out.println("9. searchForUser()");
+				System.out.println("10. threeDegrees()");
+				System.out.println("11. topMessagers()");
+				System.out.println("12. dropUser()");
+				System.out.println("13. Run Demo");
 				op = input.nextInt();
 
 				switch(op) {
@@ -82,6 +95,31 @@ public class FaceSpaceDriver {
 					System.out.println("Enter the second user ID: ");
 					int us2 = num.nextInt();
 					backend.establishFriendship(us1, us2);
+					break;
+
+				case 9:
+					System.out.println("Enter search query: ");
+					String query = str.nextLine();
+					backend.searchForUser(query);
+					break;
+
+				case 11:
+					System.out.println("Enter how many users to return: ");
+					int numU = num.nextInt();
+					System.out.println("Enter how many months to look back: ");
+					int numMonths = num.nextInt();
+					backend.topMessagers(numU, numMonths);
+					break;
+
+				case 12:
+					System.out.println("Enter the user ID to delete: ");
+					int toDelete = num.nextInt();
+					backend.dropUser(toDelete);
+					break;
+
+				case 13:
+					System.out.println("Running demo...\n");
+					demo.run();
 					break;
 
 				default:
