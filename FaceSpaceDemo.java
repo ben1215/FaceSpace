@@ -13,9 +13,9 @@ public class FaceSpaceDemo {
     //1. createUser
     System.out.println("Creating two new users...");
     System.out.println("1. Name: Teddy Brown, Email: tbrown@pitt.edu, Birthday: May 19th, 1996..");
-    u1 = backend.createUser("Teddy Brown", "tbrown@pitt.edu", "1996-05-19");
+    u1 = backend.createUser("Teddy", "Brown", "tbrown@pitt.edu", "1996-05-19");
     System.out.println("2. Name: George Robinson, Email: grobin@pitt.edu, Birthday: March 29th, 1996..");
-    u2 = backend.createUser("George Robinson", "grobin@pitt.edu", "1996-03-29");
+    u2 = backend.createUser("George", "Robinson", "grobin@pitt.edu", "1996-03-29");
     System.out.println();
 
     //2. initiateFriendship
@@ -27,7 +27,7 @@ public class FaceSpaceDemo {
     System.out.println("George is accepting Teddy's friendship request...");
     backend.establishFriendship(u1, u2);
     System.out.println();
-    
+
     //9. searchForUser
     System.out.println("Sending a search query for 'Teddy Robinson'...");
     backend.searchForUser("Teddy Robinson");

@@ -68,6 +68,7 @@ public class FaceSpaceDriver {
 				System.out.println("12. dropUser()");
 				System.out.println("13. Run Demo");
 				op = input.nextInt();
+				input.nextLine();
 
 				switch(op) {
 

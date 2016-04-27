@@ -35,19 +35,23 @@ public class FaceSpaceBackend {
 		long userID = -1;
 		// checking all of the input data to make sure it is properly formatted
 		if (fname == null || lname == null || email == null || dob == null){
-			outputMessage = "A field cannot be empty. Please try again."; return;
+			outputMessage = "A field cannot be empty. Please try again.";
+			return 0;
 		}
 
 		if (fname.length() > 32){
-				outputMessage = "First Name is too long, please shorten it to 32 characters or less."; return;
+				outputMessage = "First Name is too long, please shorten it to 32 characters or less.";
+				return 0;
 		}
 
 		if (lname.length() > 32){
-				outputMessage = "Last name is too long, please shorten it to 32 characters or less."; return;
+				outputMessage = "Last name is too long, please shorten it to 32 characters or less.";
+				return 0;
 		}
 
 		if (email.length() > 32){
-				outputMessage = "Email is too long, please shorten it to 32 characters or less."; return;
+				outputMessage = "Email is too long, please shorten it to 32 characters or less.";
+				return 0;
 		}
 
 		try {
