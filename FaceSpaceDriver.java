@@ -71,61 +71,124 @@ public class FaceSpaceDriver {
 
 				switch(op) {
 
-				case 1:
-					System.out.println("Enter a fullname: ");
-					String name = str.nextLine();
-					System.out.println("Enter an email: ");
-					String email = str.nextLine();
-					System.out.println("Enter a date of birth - YYYY-MM-DD");
-					String dob = str.nextLine();
-					backend.createUser(name, email, dob);
-					break;
+					case 1:
+						System.out.println("Enter a full name (first and last): ");
+						String name = input.nextLine();
+						System.out.println("Enter an email: ");
+						String email = input.nextLine();
+						System.out.println("Enter a date of birth - YYYY-MM-DD");
+						String dob = input.nextLine();
+						String[] names = name.split(" ");
+						System.out.println();
+						if (names.length == 1)
+							backend.createUser(names[0], "", email, dob);
+						else
+							backend.createUser(names[0], names[1], email, dob);
+						break;
 
-				case 2:
-					System.out.println("Enter the user ID of the user sending the request: ");
-					int u1 = num.nextInt();
-					System.out.println("Enter the user ID of the user receiving the request: ");
-					int u2 = num.nextInt();
-					backend.initiateFriendship(u1, u2);
-					break;
+					case 2:
+						System.out.println("Enter the user ID of the user sending the request: ");
+						int u1 = input.nextInt();
+						System.out.println("Enter the user ID of the user receiving the request: ");
+						int u2 = input.nextInt();
+						System.out.println();
+						backend.initiateFriendship(u1, u2);
+						break;
 
-				case 3:
-					System.out.println("Enter the first user ID: ");
-					int us1 = num.nextInt();
-					System.out.println("Enter the second user ID: ");
-					int us2 = num.nextInt();
-					backend.establishFriendship(us1, us2);
-					break;
+					case 3:
+						System.out.println("Enter the initiator user ID: ");
+						int us1 = input.nextInt();
+						System.out.println("Enter the confirmer user ID: ");
+						int us2 = input.nextInt();
+						System.out.println();
+						backend.establishFriendship(us1, us2);
+						break;
 
-				case 9:
-					System.out.println("Enter search query: ");
-					String query = str.nextLine();
-					backend.searchForUser(query);
-					break;
+					case 4:
+						System.out.println("Enter the user ID for the user: ");
+						int user = input.nextInt();
+						backend.displayFriends(user);
+						System.out.println();
+						break;
 
-				case 11:
-					System.out.println("Enter how many users to return: ");
-					int numU = num.nextInt();
-					System.out.println("Enter how many months to look back: ");
-					int numMonths = num.nextInt();
-					backend.topMessagers(numU, numMonths);
-					break;
+					case 5:
+						System.out.println("Enter the group name: ");
+						String gname = input.nextLine();
+						System.out.println("Enter in a brief description: ");
+						String gdescription = input.nextLine();
+						System.out.println("Enter in the max number of group members: ");
+						int maxusers = input.nextInt();
+						System.out.println();
+						backend.createGroup(gname, gdescription, maxusers);
+						break;
 
-				case 12:
-					System.out.println("Enter the user ID to delete: ");
-					int toDelete = num.nextInt();
-					backend.dropUser(toDelete);
-					break;
+					case 6:
+						System.out.println("Enter the user ID:");
+						user = input.nextInt();
+						System.out.println("Enter in the group ID:");
+						int gid = input.nextInt();
+						backend.addToGroup(gid, user);
+						System.out.println();
+						break;
 
-				case 13:
-					System.out.println("Running demo...\n");
-					demo.run();
-					break;
+					case 7:
+						System.out.println("Enter in the message subject:");
+						String subject = input.nextLine();
+						System.out.println("Enter in the message:");
+						String body = input.nextLine();
+						System.out.println("Who is sending the message? (Enter in the user ID)");
+						int sender = input.nextInt();
+						System.out.println("Who is receiving the message: (Enter in the user ID)");
+						int receiver = input.nextInt();
+						System.out.println();
+						backend.sendMessageToUser(sender, receiver, subject, body);
+						break;
 
-				default:
-					System.out.println("Closing the connection...");
-					connection.close();
-					return;
+					case 8:
+						System.out.println("What user? (User ID)");
+						user = input.nextInt();
+						System.out.println();
+						backend.displayMessages(user);
+						break;
+
+					case 9:
+						System.out.println("Enter search query: ");
+						String query = str.nextLine();
+						backend.searchForUser(query);
+						break;
+
+					case 10:
+						System.out.println("Enter user ID 1:");
+						int a = input.nextInt();
+						System.out.println("Enter user ID 2:");
+						int b = input.nextInt();
+						System.out.println();
+						backend.threeDegrees(a,b);
+						break;
+
+					case 11:
+						System.out.println("Enter how many users to return: ");
+						int numU = num.nextInt();
+						System.out.println("Enter how many months to look back: ");
+						int numMonths = num.nextInt();
+						backend.topMessagers(numU, numMonths);
+						break;
+
+					case 12:
+						System.out.println("Enter the user ID to delete: ");
+						int toDelete = num.nextInt();
+						backend.dropUser(toDelete);
+						break;
+
+					case 13:
+						System.out.println("Running demo...\n");
+						demo.run();
+						break;
+
+					default:
+						System.out.println("Closing the connection...");
+						connection.close();
+						return;
 				}
 			}
 		}
